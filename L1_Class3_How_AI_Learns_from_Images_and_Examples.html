@@ -1,0 +1,475 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>How AI Learns from Images and Examples</title><style>*{box-sizing:border-box}
+html{background:#eceef9}
+:root{--ink:#1c2250;--muted:#4b5384;--card:#fff;--line:#d9def3;--indigo:#4a52c9;--moon:#f3c44f;--teal:#1fa79c;--coral:#e9604f;--lilac:#8a68dc;--sky:#3a8ee0;--soft:#f3f5fe}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;font-size:19px;line-height:1.5;color:var(--ink);min-height:100vh;
+background:
+radial-gradient(circle at calc(100% - 90px) 120px,#fffdf3 0 48px,#fbeeb9 49px 54px,rgba(251,238,185,.5) 55px 105px,rgba(251,238,185,0) 230px),
+radial-gradient(circle at 8% 22%,#b3bcea 0 2px,transparent 3px),
+radial-gradient(circle at 22% 9%,#c7b8ef 0 2px,transparent 3px),
+radial-gradient(circle at 41% 16%,#b3bcea 0 1.5px,transparent 2.5px),
+radial-gradient(circle at 63% 7%,#c7b8ef 0 2px,transparent 3px),
+radial-gradient(circle at 74% 28%,#b3bcea 0 1.5px,transparent 2.5px),
+radial-gradient(circle at 5% 64%,#c7b8ef 0 2px,transparent 3px),
+radial-gradient(circle at 95% 58%,#b3bcea 0 2px,transparent 3px),
+radial-gradient(circle at 33% 88%,#c7b8ef 0 1.5px,transparent 2.5px),
+radial-gradient(circle at 82% 92%,#b3bcea 0 2px,transparent 3px),
+linear-gradient(170deg,#edf1fc 0%,#e6e5f8 55%,#f3eefb 100%);
+background-attachment:fixed}
+.top{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;padding:10px 22px;background:rgba(255,255,255,.85);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.brand{font-size:14px;font-weight:700;color:var(--indigo);letter-spacing:.3px}
+.lvl{font-size:14px;color:var(--muted);flex:1}
+.homebtn{font:inherit;font-size:15px;font-weight:700;background:#fff;border:2px solid var(--line);color:var(--indigo);border-radius:12px;padding:6px 14px;cursor:pointer}
+main{max-width:1120px;margin:0 auto;padding:24px 18px 70px}
+.page{display:none;animation:fade .35s}
+.page.show{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.luna{display:inline-block;width:110px}
+.luna svg{width:100%;height:auto;display:block}
+.big-luna{width:170px;animation:float 3.2s ease-in-out infinite}
+.title-card{min-height:76vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px}
+.title-card h1{font-size:clamp(36px,5.4vw,60px);line-height:1.15;margin:6px 0 10px;max-width:900px}
+.chap{font-size:17px;font-weight:700;color:var(--lilac);background:#fff;border:2px solid var(--line);border-radius:999px;padding:6px 18px}
+.menu-h{font-size:36px;margin:4px 0 4px}
+.menu-sub{color:var(--muted);margin:0 0 18px}
+.grp-h{display:inline-block;font-weight:700;font-size:18px;padding:6px 16px;border-radius:999px;background:#fff;border:2px solid var(--line);margin:18px 0 12px}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:16px}
+.mcard{font:inherit;position:relative;text-align:left;background:#fff;border:1px solid var(--line);border-top:7px solid var(--indigo);border-radius:20px;padding:16px 18px;cursor:pointer;display:flex;flex-direction:column;gap:6px;box-shadow:0 6px 20px rgba(60,70,150,.08);transition:transform .15s,box-shadow .15s;color:var(--ink)}
+.mcard:hover{transform:translateY(-4px);box-shadow:0 12px 26px rgba(60,70,150,.15)}
+.mcard.g-Do{border-top-color:var(--teal)}.mcard.g-Wrap{border-top-color:var(--coral)}
+.mnum{position:absolute;top:12px;right:14px;width:30px;height:30px;border-radius:50%;background:var(--soft);display:grid;place-items:center;font-weight:700;font-size:15px;color:var(--muted)}
+.mcard.done .mnum{background:var(--moon);color:var(--ink)}
+.mcard.done .mnum::after{content:"⭐";position:absolute;font-size:14px;top:-8px;right:-8px}
+.mic{font-size:40px;line-height:1}
+.mt{font-size:21px;font-weight:700}
+.mm{font-size:15px;color:var(--muted)}
+.sec-head{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+.sec-ic{font-size:42px;min-width:76px;height:76px;border-radius:22px;background:#fff;display:grid;place-items:center;border:2px solid var(--line)}
+.sec-kick{font-size:15px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px}
+.sec-title{font-size:34px;margin:0;line-height:1.2}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
+.badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(90deg,#4a52c9,#8a68dc);color:#fff;border-radius:999px;padding:4px 13px;font-size:13px;font-weight:700}
+.badge.b2{background:linear-gradient(90deg,#1fa79c,#3a8ee0)}
+.badge.b3{background:linear-gradient(90deg,#e9604f,#f39a3d)}
+.card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:22px 24px;box-shadow:0 6px 22px rgba(60,70,150,.08);margin-bottom:18px}
+.card h3{margin:0 0 10px;font-size:25px}
+.card p{margin:6px 0}
+.muted{color:var(--muted)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:16px}
+.btn{font:inherit;font-weight:700;border:none;border-radius:14px;padding:12px 20px;background:var(--indigo);color:#fff;cursor:pointer;box-shadow:0 4px 0 #343b9e;transition:transform .1s,box-shadow .1s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #343b9e}
+.btn:disabled{opacity:.5;cursor:default}
+.btn.teal{background:var(--teal);box-shadow:0 4px 0 #13786f}
+.btn.coral{background:var(--coral);box-shadow:0 4px 0 #b4402f}
+.btn.lilac{background:var(--lilac);box-shadow:0 4px 0 #6447b3}
+.btn.moon{background:var(--moon);color:var(--ink);box-shadow:0 4px 0 #c99a20}
+.btn.ghost{background:#fff;color:var(--indigo);border:2px solid var(--line);box-shadow:none}
+.btn.big{font-size:24px;padding:16px 36px;border-radius:18px}
+.btn.sm{font-size:16px;padding:8px 14px;border-radius:11px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:14px}
+.sec-nav{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:28px}
+.slide{display:none;text-align:center;padding:10px 6px}
+.slide.on{display:block;animation:fade .4s}
+.scene{font-size:72px;line-height:1.2;margin:10px 0 14px;letter-spacing:6px}
+.story-text{font-size:24px;max-width:820px;margin:0 auto}
+.big-q{font-weight:700;color:var(--indigo)}
+.sl-ctrl{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:10px}
+.dots{display:flex;gap:8px}
+.dots i{width:12px;height:12px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--moon);transform:scale(1.25)}
+.flip{perspective:900px;cursor:pointer;min-height:230px}
+.flip .in{position:relative;width:100%;min-height:230px;transition:transform .6s;transform-style:preserve-3d}
+.flip.on .in{transform:rotateY(180deg)}
+.flip .f,.flip .b{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:22px;padding:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border:1px solid var(--line)}
+.flip .f{background:#fff;box-shadow:0 6px 18px rgba(60,70,150,.08)}
+.flip .f .big{font-size:62px;line-height:1.1}
+.flip .f b{font-size:23px;margin-top:6px}
+.flip .f small{color:var(--muted);font-size:14px;margin-top:6px}
+.flip .b{background:linear-gradient(160deg,#4a52c9,#8a68dc);color:#fff;transform:rotateY(180deg);font-size:20px}
+.pipeline{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap;justify-content:center}
+.pstep{background:var(--soft);border-radius:18px;padding:16px;text-align:center;min-width:170px;flex:1}
+.pstep .big{font-size:44px;line-height:1.2}
+.pstep b{display:block;font-size:21px}
+.pstep span{display:block;color:var(--muted);font-size:16px}
+.parrow{font-size:34px;color:var(--lilac);align-self:center}
+.chip{font:inherit;background:#fff;border:2px solid var(--line);border-radius:16px;padding:10px 12px;cursor:pointer;display:inline-flex;flex-direction:column;align-items:center;min-width:100px;color:var(--ink);transition:transform .12s}
+.chip:hover{transform:translateY(-2px)}
+.chip .big{font-size:42px;line-height:1.15}
+.chip small{font-size:15px;color:var(--muted)}
+.chip.sel{border-color:var(--moon);box-shadow:0 0 0 4px #fbe6a4}
+.chip.ok{border-color:var(--teal);background:#e6f7f5}
+.chip.bad{border-color:var(--coral);background:#fdecea}
+.tray{display:flex;flex-wrap:wrap;gap:10px;padding:14px;background:var(--soft);border-radius:18px;border:2px dashed var(--line);min-height:96px}
+.buckets{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:14px}
+.bucket{background:#fff;border:3px solid var(--line);border-radius:18px;padding:12px;min-height:150px;cursor:pointer}
+.bucket:hover{border-color:var(--indigo)}
+.bh{font-weight:700;font-size:20px;margin-bottom:8px}
+.bin{display:flex;flex-wrap:wrap;gap:8px}
+.fb{font-weight:700;font-size:20px;min-height:28px}
+.fb.good{color:#13786f}.fb.oops{color:#b4402f}
+.qcard{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 20px;margin-bottom:14px}
+.qn{display:inline-block;background:var(--moon);border-radius:10px;padding:2px 10px;font-weight:700;font-size:14px}
+.qq{font-size:21px;font-weight:700;margin:8px 0}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.opt{font:inherit;text-align:left;background:var(--soft);border:2px solid var(--line);border-radius:14px;padding:12px 14px;cursor:pointer;color:var(--ink)}
+.opt:hover{border-color:var(--indigo)}
+.opt.right{background:#e3f6f3;border-color:var(--teal)}
+.opt.wrong{background:#fdebe8;border-color:var(--coral)}
+.why{margin:8px 0 0;color:var(--muted)}
+.score-box{text-align:center;font-size:26px;font-weight:700;background:linear-gradient(90deg,#fff6d6,#efeaff);border-radius:18px;padding:18px}
+.tip{background:#fff8e1;border-left:6px solid var(--moon);border-radius:12px;padding:12px 16px;margin:12px 0;font-size:17px}
+.tip.teacher{background:#eef0ff;border-left-color:var(--indigo)}
+.meter{height:24px;background:#eceffa;border-radius:999px;overflow:hidden;border:1px solid var(--line)}
+.meter>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--sky));transition:width .45s}
+.blk{display:inline-flex;align-items:center;gap:8px;padding:8px 13px;border-radius:12px;color:#fff;font-weight:700;font-size:18px}
+.blk select,.blk input{font:inherit;font-size:17px;border-radius:8px;border:none;padding:4px 8px;color:var(--ink);background:#fff}
+.blk.if{background:#ef8d2c}.blk.and{background:#c77700}.blk.then{background:var(--indigo)}.blk.when{background:#d9a20a}.blk.do{background:var(--teal)}.blk.say{background:var(--lilac)}
+.rule{background:var(--soft);border-radius:16px;padding:10px 12px;margin-bottom:10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;border:2px solid var(--line)}
+.codebox{background:#f6f4ff;border:2px solid #ddd6fb;border-radius:16px;padding:14px 16px;font-family:"Courier New",monospace;font-size:17px;white-space:pre-wrap;color:#2c2f6b;line-height:1.55}
+.codebox .k{color:#c2410c;font-weight:700}.codebox .s{color:#0f766e}.codebox .c{color:#7c7fa8}
+.res-table{width:100%;border-collapse:collapse;margin-top:10px}
+.res-table td,.res-table th{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left}
+.res-table th{font-size:15px;color:var(--muted)}
+.discuss{display:grid;gap:14px}
+.dq{font-size:22px;font-weight:700}
+.ans{background:var(--soft);border-radius:12px;padding:10px 14px;margin-top:10px}
+.mission{background:linear-gradient(135deg,#fff8e1,#efeaff);border:2px solid #e9dcff}
+.mission li{margin:6px 0}
+.mission input{transform:scale(1.4);margin-right:10px}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(120px);background:var(--ink);color:#fff;padding:14px 22px;border-radius:16px;font-weight:700;z-index:99;transition:transform .35s;max-width:90vw;text-align:center}
+.toast.on{transform:translateX(-50%) translateY(0)}
+.conf{position:fixed;top:-50px;font-size:30px;pointer-events:none;z-index:98;animation:fall 1.8s linear forwards}
+@keyframes fall{to{transform:translateY(112vh) rotate(380deg)}}
+.pill{display:inline-block;background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:15px;margin:2px}
+.center{text-align:center}
+@media(max-width:640px){body{font-size:17px}.sec-title{font-size:26px}.scene{font-size:52px}.story-text{font-size:20px}.menu-h{font-size:28px}}
+</style></head><body>
+<header class="top"><div class="brand">Young IT Germany</div><div class="lvl">Level 1 · AI Explorer</div><button class="homebtn" data-go="menu">🏠 Menu</button></header>
+<main>
+<section class="page show" id="title"><div class="title-card"><div class="chap">How AI Learns from What It Senses</div><div class="luna big-luna"></div><h1>How AI Learns from Images and Examples</h1><button class="btn big moon" data-go="menu">Enter Activities ✨</button></div></section>
+<section class="page" id="menu"><h2 class="menu-h">How AI Learns from Images and Examples</h2><p class="menu-sub">Follow the moon path from 1 to 8 — or tap any part to jump in!</p><div id="menuGrid"></div></section>
+<section class="page" data-sec="hook" data-group="Learn" data-title="Hook / Story" data-min="5" data-icon="📖">
+<div class="card"><div class="slides">
+ <div class="slide"><div class="scene">🌙 📦 🤖</div><p class="story-text">One night, Luna the Moon Robot floated down to Earth and found a big box of photos. "What are these furry things?" Luna wondered.</p></div>
+ <div class="slide"><div class="scene">🐱 🐶 🐈 🐕</div><p class="story-text">Some had pointy ears and whiskers. Some had floppy ears and waggy tails. But Luna had <b>never</b> seen a cat or a dog before!</p></div>
+ <div class="slide"><div class="scene">👧 🖼️ ➡️ 🏷️</div><p class="story-text">A girl named Mia helped. She showed Luna 20 cat photos and said <b>"cat"</b> each time. Then 20 dog photos and said <b>"dog"</b>.</p></div>
+ <div class="slide"><div class="scene">🤖 💡 🐶 ✅</div><p class="story-text">The next day Mia held up a brand-new photo. Luna beeped: <b>"That's a DOG!"</b> Luna had learned from examples!</p></div>
+ <div class="slide"><div class="scene">🤔 ❓ 🐈</div><p class="story-text big-q">How did YOU learn what a cat looks like? Did someone give you a rule… or did you see lots and lots of cats?</p></div>
+</div><div class="row"><button class="btn ghost sm" data-say=".slide.on">🔊 Read to me</button></div></div>
+<div class="tip teacher">👩‍🏫 <b>Teacher tip:</b> Stop on the last slide and take 3–4 answers. Bring out the big idea: we learn by seeing many examples — and AI does the same!</div>
+</section>
+
+<section class="page" data-sec="concept" data-group="Learn" data-title="Simple Concept" data-min="10" data-icon="💡">
+<div class="badges"><span class="badge">🇪🇺 AI Literacy</span></div>
+<div class="card"><h3>AI learns in 3 steps</h3>
+<div class="pipeline"><div class="pstep"><div class="big">🖼️🖼️🖼️</div><b>1. Examples</b><span>Lots of pictures with names</span></div><div class="parrow">➜</div><div class="pstep"><div class="big">🔍</div><b>2. Patterns</b><span>AI spots what looks the same</span></div><div class="parrow">➜</div><div class="pstep"><div class="big">💡</div><b>3. Prediction</b><span>AI guesses a NEW picture</span></div></div></div>
+<h3 style="margin:22px 0 12px">🃏 Magic word cards — tap to flip!</h3>
+<div class="grid3">
+ <div class="flip"><div class="in"><div class="f"><div class="big">📚</div><b>Training Data</b><small>Tap to flip 👆</small></div><div class="b">The pictures we use to teach the AI. It is the AI's practice book!</div></div></div>
+ <div class="flip"><div class="in"><div class="f"><div class="big">🏷️</div><b>Label</b><small>Tap to flip 👆</small></div><div class="b">The name we give each picture, like "cat", "dog" or "apple".</div></div></div>
+ <div class="flip"><div class="in"><div class="f"><div class="big">🔍</div><b>Pattern</b><small>Tap to flip 👆</small></div><div class="b">Something that repeats. Cats usually have pointy ears and whiskers.</div></div></div>
+ <div class="flip"><div class="in"><div class="f"><div class="big">🔮</div><b>Prediction</b><small>Tap to flip 👆</small></div><div class="b">The AI's best guess about a picture it has NEVER seen before.</div></div></div>
+</div>
+<div class="card" style="margin-top:18px"><h3>📈 Does more practice help the AI?</h3>
+<p>Move the slider to give the AI more example photos.</p>
+<input type="range" id="exSlider" min="1" max="100" value="3" style="width:100%;accent-color:#4a52c9">
+<div class="grid2" style="align-items:center;margin-top:10px">
+ <div><p><b>Example photos:</b> <span id="exN">3</span></p><div class="meter"><i id="exBar"></i></div><p style="margin-top:6px"><b>How often the AI is right:</b> <span id="exAcc"></span></p></div>
+ <div class="center"><div id="exFace" style="font-size:80px">😵‍💫</div><p id="exTxt" class="muted"></p></div>
+</div></div>
+</section>
+
+<section class="page" data-sec="demo" data-group="Learn" data-title="Live AI Demo" data-min="10" data-icon="🔮">
+<div class="card"><h3>Teach the AI to tell two drawings apart</h3>
+<p>1️⃣ Draw a picture. 2️⃣ Add it as an example. 3️⃣ Do this 3 times for each group. 4️⃣ Draw a new one and ask the AI!</p>
+<div class="grid2" style="margin-top:12px">
+ <div class="center"><canvas id="pad" width="300" height="300" style="background:#fff;border:3px solid #d9def3;border-radius:20px;touch-action:none;cursor:crosshair;max-width:100%"></canvas>
+ <div class="row" style="justify-content:center"><button class="btn ghost" id="clr">🧽 Clear</button></div></div>
+ <div>
+  <div class="rule" style="display:block"><div class="row" style="margin:0"><input id="nA" value="Sun ☀️" style="font:inherit;padding:8px;border-radius:10px;border:2px solid #d9def3;width:150px"><button class="btn teal sm" id="addA">➕ Add as example</button></div><div id="exA" class="row" style="margin-top:8px"></div></div>
+  <div class="rule" style="display:block"><div class="row" style="margin:0"><input id="nB" value="House 🏠" style="font:inherit;padding:8px;border-radius:10px;border:2px solid #d9def3;width:150px"><button class="btn coral sm" id="addB">➕ Add as example</button></div><div id="exB" class="row" style="margin-top:8px"></div></div>
+  <button class="btn moon big" id="ask" style="width:100%;margin-top:6px">🔮 What is it, AI?</button>
+  <div id="res" class="card center" style="margin-top:14px;font-size:22px">Add at least 2 examples of each group to start.</div>
+ </div></div></div>
+<div class="tip teacher">👩‍🏫 <b>Try this live:</b> draw a really messy sun. Does the AI still get it? Add more examples and ask again — the AI gets better with more practice!</div>
+</section>
+
+<section class="page" data-sec="activity" data-group="Do" data-title="Student Activity" data-min="15" data-icon="🧩">
+<div class="card"><h3>🏷️ Part 1: Cat or Dog?</h3><p>Help Luna! Put each picture in the right box.</p><div id="sort1"></div></div>
+<div class="card"><h3>🕵️ Part 2: Find the Mistake</h3><p>One picture has the WRONG name. Tap it!</p>
+<div id="spot" class="row"></div><p class="fb" id="spotFb"></p></div>
+</section>
+
+<section class="page" data-sec="build" data-group="Do" data-title="Build / Coding Exercise" data-min="20" data-icon="🧱">
+<div class="card"><h3>🍓 Finish the Fruit Detector</h3>
+<p>Luna's rules are almost ready! The <b>colour</b> and <b>shape</b> are already filled in. You choose what Luna should <b>say</b>. Then press ▶ Run!</p>
+<div id="rules"></div>
+<div class="row"><button class="btn teal" id="runRules">▶ Run my program</button></div></div>
+<div class="grid2">
+ <div class="card"><h3>👀 Your code</h3><div class="codebox" id="code"></div></div>
+ <div class="card"><h3>🧪 Test results</h3><table class="res-table" id="resT"><tr><td class="muted">Press ▶ Run to test your rules.</td></tr></table><p class="fb" id="runFb"></p></div>
+</div>
+<div class="tip">💡 <b>Hint:</b> Which fruit is yellow and long? Which one is red and round?</div>
+</section>
+
+<section class="page" data-sec="challenge" data-group="Do" data-title="Challenge" data-min="15" data-icon="🏆">
+<div class="card"><h3>🐱 Pick the Best Cat Photos</h3>
+<p>Choose <b>4 photos</b> to teach Luna what a cat is. Only pick real, clear cats!</p>
+<div id="pick" class="tray" style="background:#fff"></div>
+<div class="row"><b>Chosen: <span id="pickN">0</span> / 4</b><button class="btn teal" id="pickChk">Teach Luna ✔</button><button class="btn ghost" id="pickRst">Start again ↺</button></div>
+<div id="pickFb" style="margin-top:12px"></div></div>
+<div class="card"><h3>🌟 Super Challenge</h3><div id="superQ"></div></div>
+</section>
+
+<section class="page" data-sec="discuss" data-group="Wrap" data-title="Discussion" data-min="5" data-icon="💬">
+<div class="discuss">
+ <div class="card"><div class="dq">🐈‍⬛ An AI only saw orange cats. Will it know a black cat?</div><button class="btn ghost sm" data-reveal>💡 Show an idea</button><div class="ans" hidden>Maybe not! The AI only knows what it has seen. That is why we need many different examples.</div></div>
+ <div class="card"><div class="dq">📱 Where do you see AI recognising pictures in real life?</div><button class="btn ghost sm" data-reveal>💡 Show an idea</button><div class="ans" hidden>Phones that unlock with your face, photo apps that find all your dog pictures, cars that read road signs.</div></div>
+ <div class="card"><div class="badges"><span class="badge b2">🇪🇺 GDPR · Ask first</span></div><div class="dq">🤳 Is it OK to use photos of people to train AI without asking them?</div><button class="btn ghost sm" data-reveal>💡 Show an idea</button><div class="ans" hidden>No! Photos of people are personal. In Europe, a law called GDPR says we must ask before using someone's personal data.</div></div>
+</div>
+</section>
+
+<section class="page" data-sec="quiz" data-group="Wrap" data-title="Quiz &amp; Take-home Mission" data-min="10" data-icon="🎯">
+<div id="quiz"></div>
+<div class="card mission"><h3>🚀 Take-home Mission: Picture Hunter</h3><ul style="list-style:none;padding:0">
+<li><label><input type="checkbox">Find 5 things at home that are <b>round</b> ⚪</label></li>
+<li><label><input type="checkbox">Find 5 things at home that are <b>long</b> ➖</label></li>
+<li><label><input type="checkbox">Draw them in your notebook and write a <b>label</b> under each one</label></li>
+<li><label><input type="checkbox">Show a family member your "training data" and explain how AI learns from it</label></li></ul></div>
+</section>
+
+</main><script>const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const LUNA=`<svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg"><line x1="60" y1="10" x2="60" y2="24" stroke="#4a52c9" stroke-width="4" stroke-linecap="round"/><path d="M60 1 l3.2 6.4 7 1-5 5 1.2 7-6.4-3.4-6.4 3.4 1.2-7-5-5 7-1z" fill="#f3c44f"/><circle cx="60" cy="52" r="30" fill="#fff4c9" stroke="#f3c44f" stroke-width="4"/><circle cx="75" cy="40" r="5" fill="#f6dd8a"/><circle cx="44" cy="66" r="4" fill="#f6dd8a"/><circle cx="49" cy="50" r="5.5" fill="#1c2250"/><circle cx="71" cy="50" r="5.5" fill="#1c2250"/><circle cx="51" cy="48" r="1.8" fill="#fff"/><circle cx="73" cy="48" r="1.8" fill="#fff"/><path d="M50 62 q10 8 20 0" stroke="#1c2250" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="39" cy="60" r="4" fill="#f9b4a8"/><circle cx="81" cy="60" r="4" fill="#f9b4a8"/><rect x="32" y="84" width="56" height="42" rx="14" fill="#8a68dc"/><rect x="44" y="93" width="32" height="20" rx="6" fill="#eef2fc"/><circle cx="52" cy="103" r="3" fill="#1fa79c"/><circle cx="60" cy="103" r="3" fill="#f3c44f"/><circle cx="68" cy="103" r="3" fill="#e9604f"/><rect x="18" y="89" width="12" height="26" rx="6" fill="#4a52c9"/><rect x="90" y="89" width="12" height="26" rx="6" fill="#4a52c9"/><rect x="40" y="124" width="12" height="13" rx="4" fill="#4a52c9"/><rect x="68" y="124" width="12" height="13" rx="4" fill="#4a52c9"/></svg>`;
+const App={onShow:{},shown:new Set(),done:new Set()};
+const GROUPS=[['Learn','🌙 Learn'],['Do','🚀 Do &amp; Build'],['Wrap','⭐ Wrap Up']];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function setup(){
+  $$('.luna').forEach(e=>e.innerHTML=LUNA);
+  const secs=$$('section.page[data-sec]');
+  secs.forEach(s=>s.id='s-'+s.dataset.sec);
+  const grid=$('#menuGrid');
+  GROUPS.forEach(([g,label])=>{
+    const list=secs.filter(s=>s.dataset.group===g); if(!list.length)return;
+    grid.insertAdjacentHTML('beforeend',`<div class="grp-h">${label}</div><div class="mgrid" id="mg-${g}"></div>`);
+    list.forEach(s=>{const i=secs.indexOf(s);
+      $('#mg-'+g).insertAdjacentHTML('beforeend',`<button class="mcard g-${g}" data-go="${s.id}"><span class="mnum">${i+1}</span><span class="mic">${s.dataset.icon}</span><span class="mt">${s.dataset.title}</span><span class="mm">⏱ ${s.dataset.min} min</span></button>`)});
+  });
+  secs.forEach((s,i)=>{
+    s.insertAdjacentHTML('afterbegin',`<div class="sec-head"><div class="sec-ic">${s.dataset.icon}</div><div><div class="sec-kick">Part ${i+1} of ${secs.length} · ${s.dataset.min} minutes</div><h2 class="sec-title">${s.dataset.title}</h2></div></div>`);
+    const nx=secs[i+1];
+    s.insertAdjacentHTML('beforeend',`<div class="sec-nav"><button class="btn ghost" data-go="menu">← Back to Menu</button>${nx?`<button class="btn" data-go="${nx.id}">Next: ${nx.dataset.title} →</button>`:`<button class="btn moon" data-go="menu">Finish 🌙</button>`}</div>`);
+  });
+  document.addEventListener('click',e=>{
+    const g=e.target.closest('[data-go]'); if(g){go(g.dataset.go);return}
+    const f=e.target.closest('.flip'); if(f){f.classList.toggle('on');return}
+    const r=e.target.closest('[data-reveal]'); if(r){const t=r.nextElementSibling;t.hidden=!t.hidden;r.textContent=t.hidden?'💡 Show an idea':'🙈 Hide idea';return}
+    const sy=e.target.closest('[data-say]'); if(sy){const t=sy.dataset.say?$('.page.show '+sy.dataset.say):sy.closest('.card');if(t)say(t.innerText)}
+  });
+  $$('.slides').forEach(initSlides);
+}
+function go(id){
+  $$('.page').forEach(p=>p.classList.remove('show'));
+  const p=document.getElementById(id); if(!p)return; p.classList.add('show'); window.scrollTo({top:0});
+  if('speechSynthesis' in window)speechSynthesis.cancel();
+  if(!App.shown.has(id)){App.shown.add(id);const sec=p.dataset.sec;if(sec&&App.onShow[sec])App.onShow[sec]()}
+}
+function say(t){if(!('speechSynthesis' in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.rate=.9;u.lang='en-US';speechSynthesis.speak(u)}
+function initSlides(el){
+  const sl=$$('.slide',el);let i=0;
+  el.insertAdjacentHTML('beforeend',`<div class="sl-ctrl"><button class="btn ghost prev">◀ Back</button><div class="dots">${sl.map(()=>'<i></i>').join('')}</div><button class="btn next">Next ▶</button></div>`);
+  const dots=$$('.dots i',el),pv=$('.prev',el),nx=$('.next',el);
+  const up=()=>{sl.forEach((s,k)=>s.classList.toggle('on',k===i));dots.forEach((d,k)=>d.classList.toggle('on',k===i));pv.disabled=i===0;nx.disabled=i===sl.length-1};
+  pv.onclick=()=>{if(i>0){i--;up()}};nx.onclick=()=>{if(i<sl.length-1){i++;up()}};up();
+}
+let toastT;
+function toast(m){let t=$('.toast');if(!t){t=document.createElement('div');t.className='toast';document.body.appendChild(t)}t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2600)}
+function confetti(){const em=['⭐','🌙','✨','💫','🌟'];for(let k=0;k<26;k++){const s=document.createElement('span');s.className='conf';s.textContent=em[k%em.length];s.style.left=Math.random()*100+'vw';s.style.animationDelay=Math.random()*.5+'s';s.style.fontSize=(20+Math.random()*20)+'px';document.body.appendChild(s);setTimeout(()=>s.remove(),2600)}}
+function award(sec,msg){App.done.add(sec);const c=$(`.mcard[data-go="s-${sec}"]`);if(c)c.classList.add('done');confetti();toast(msg||'Amazing work! ⭐')}
+function quiz(el,qs,onDone){
+  let score=0,ans=0;
+  el.innerHTML=qs.map((q,i)=>`<div class="qcard"><span class="qn">Question ${i+1}</span><p class="qq">${q.q}</p><div class="opts">${q.o.map((o,j)=>`<button class="opt" data-i="${i}" data-j="${j}">${o}</button>`).join('')}</div><p class="why"></p></div>`).join('')+`<div class="score-box" hidden></div>`;
+  el.addEventListener('click',e=>{const b=e.target.closest('.opt');if(!b)return;const c=b.closest('.qcard');if(c.dataset.done)return;c.dataset.done=1;
+    const q=qs[b.dataset.i],ok=+b.dataset.j===q.a;b.classList.add(ok?'right':'wrong');if(!ok)$$('.opt',c)[q.a].classList.add('right');
+    $('.why',c).innerHTML=(ok?'✅ Correct! ':'💡 ')+q.why;if(ok)score++;ans++;
+    if(ans===qs.length){const sb=$('.score-box',el);sb.hidden=false;const st=Math.round(score/qs.length*5);sb.innerHTML=`You got ${score} out of ${qs.length}! <br>${'⭐'.repeat(st)}${'☆'.repeat(5-st)}<br><span style="font-size:18px;font-weight:400">${score===qs.length?'Perfect! You are a true AI Explorer!':'Great try! Scroll up to read the explanations.'}</span>`;onDone&&onDone(score)}});
+}
+function sorter(el,items,cats,onWin){
+  const build=()=>{
+    el.innerHTML=`<p class="muted">👆 Tap a picture, then tap the box where it belongs.</p><div class="tray">${shuffle(items.map((it,i)=>({...it,i}))).map(it=>`<button class="chip" data-i="${it.i}"><span class="big">${it.e}</span><small>${it.n}</small></button>`).join('')}</div><div class="buckets">${cats.map(c=>`<div class="bucket" data-c="${c.id}"><div class="bh">${c.icon} ${c.name}</div><div class="bin"></div></div>`).join('')}</div><div class="row"><button class="btn teal chk">Check my sorting ✔</button><button class="btn ghost rst">Start again ↺</button></div><p class="fb"></p>`;
+    let sel=null;
+    el.onclick=e=>{
+      const ch=e.target.closest('.chip');
+      if(ch){$$('.chip',el).forEach(c=>c.classList.remove('sel'));if(sel===ch){sel=null;return}sel=ch;ch.classList.add('sel');ch.classList.remove('ok','bad');return}
+      const bk=e.target.closest('.bucket');
+      if(bk&&sel){$('.bin',bk).appendChild(sel);sel.classList.remove('sel');sel=null;return}
+      if(e.target.closest('.rst')){build();return}
+      if(e.target.closest('.chk')){
+        const fb=$('.fb',el);
+        if($$('.tray .chip',el).length){fb.className='fb oops';fb.textContent='Sort every picture first! 🙂';return}
+        let right=0;$$('.bucket',el).forEach(b=>$$('.chip',b).forEach(c=>{const ok=items[c.dataset.i].cat===b.dataset.c;c.classList.add(ok?'ok':'bad');if(ok)right++}));
+        if(right===items.length){fb.className='fb good';fb.textContent=`All ${right} correct! You made perfect training data! 🎉`;onWin&&onWin()}
+        else{fb.className='fb oops';fb.textContent=`${right} of ${items.length} correct. Move the red ones to the right box and check again!`}
+      }
+    };
+  };build();
+}
+window.addEventListener('DOMContentLoaded',setup);
+</script><script>// CONCEPT slider
+App.onShow.concept=()=>{
+  const s=$('#exSlider');
+  const up=()=>{const n=+s.value,acc=Math.round(50+48*(1-Math.exp(-n/18)));
+    $('#exN').textContent=n;$('#exBar').style.width=acc+'%';$('#exAcc').textContent=acc+' out of 100 times';
+    $('#exFace').textContent=acc<65?'😵‍💫':acc<85?'🤔':'😎';
+    $('#exTxt').textContent=acc<65?'"I am confused… I need more examples!"':acc<85?'"I am getting better!"':'"Now I am really good at this!"'};
+  s.oninput=up;up();
+};
+
+// LIVE DEMO: doodle classifier (nearest neighbour)
+App.onShow.demo=()=>{
+  const c=$('#pad'),ctx=c.getContext('2d');let drawing=false;
+  const clear=()=>{ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height)};clear();
+  ctx.lineWidth=14;ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#1c2250';
+  const pos=e=>{const r=c.getBoundingClientRect();return[(e.clientX-r.left)*c.width/r.width,(e.clientY-r.top)*c.height/r.height]};
+  c.onpointerdown=e=>{drawing=true;c.setPointerCapture(e.pointerId);const[x,y]=pos(e);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+.1,y+.1);ctx.stroke()};
+  c.onpointermove=e=>{if(!drawing)return;const[x,y]=pos(e);ctx.lineTo(x,y);ctx.stroke()};
+  c.onpointerup=c.onpointercancel=()=>drawing=false;
+  $('#clr').onclick=clear;
+  const data={A:[],B:[]};
+  const feat=()=>{const d=ctx.getImageData(0,0,c.width,c.height).data;let x0=1e9,y0=1e9,x1=-1,y1=-1;
+    for(let y=0;y<c.height;y+=2)for(let x=0;x<c.width;x+=2){if(d[(y*c.width+x)*4]<160){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}}
+    if(x1<0)return null;const s=Math.max(x1-x0,y1-y0)+24,cx=(x0+x1)/2,cy=(y0+y1)/2;
+    const t=document.createElement('canvas');t.width=t.height=20;const tc=t.getContext('2d');tc.fillStyle='#fff';tc.fillRect(0,0,20,20);
+    tc.drawImage(c,cx-s/2,cy-s/2,s,s,0,0,20,20);const g=tc.getImageData(0,0,20,20).data,v=[];
+    for(let i=0;i<400;i++)v.push(1-g[i*4]/255);return v};
+  const add=k=>{const v=feat();if(!v){toast('Draw something first! ✏️');return}
+    data[k].push(v);const im=new Image();im.src=c.toDataURL();im.style.cssText='width:54px;height:54px;border:2px solid #d9def3;border-radius:10px';
+    $('#ex'+k).appendChild(im);clear();toast('Example added! The AI has '+data[k].length+' of this group.')};
+  $('#addA').onclick=()=>add('A');$('#addB').onclick=()=>add('B');
+  const dist=(a,b)=>{let s=0;for(let i=0;i<a.length;i++)s+=(a[i]-b[i])**2;return s};
+  $('#ask').onclick=()=>{
+    if(data.A.length<2||data.B.length<2){$('#res').innerHTML='I need at least <b>2 examples</b> of each group first! 📚';return}
+    const v=feat();if(!v){$('#res').textContent='Draw a new picture for me to guess! ✏️';return}
+    const best=k=>Math.min(...data[k].map(e=>dist(e,v)));const dA=best('A'),dB=best('B');
+    const win=dA<dB?'A':'B',conf=Math.round(100*Math.max(dA,dB)/(dA+dB));
+    $('#res').innerHTML=`<div class="luna" style="width:70px"></div><br>I think it is a <b>${$('#n'+win).value}</b>!<br><span class="muted" style="font-size:17px">I am ${conf}% sure. I compared it with all ${data.A.length+data.B.length} examples you taught me.</span>`;
+    $('.luna',$('#res')).innerHTML=LUNA;
+  };
+};
+
+// ACTIVITY
+App.onShow.activity=()=>{
+  sorter($('#sort1'),[
+    {e:'🐈',n:'Walking cat',cat:'cat'},{e:'🐕',n:'Dog',cat:'dog'},{e:'🐩',n:'Poodle',cat:'dog'},{e:'🐈‍⬛',n:'Black cat',cat:'cat'},
+    {e:'🦮',n:'Guide dog',cat:'dog'},{e:'😺',n:'Smiley cat',cat:'cat'},{e:'🐶',n:'Puppy',cat:'dog'},{e:'🦊',n:'Fox',cat:'none'},
+    {e:'🧸',n:'Teddy bear',cat:'none'},{e:'🙀',n:'Surprised cat',cat:'cat'}],
+    [{id:'cat',name:'Cat',icon:'🐱'},{id:'dog',name:'Dog',icon:'🐶'},{id:'none',name:'Neither',icon:'🚫'}],
+    ()=>award('activity','Perfect labels! Luna can learn now! 🏷️'));
+  const items=[{e:'🐱',l:'Cat',w:0},{e:'🐶',l:'Cat',w:1},{e:'🐕',l:'Dog',w:0},{e:'🐈‍⬛',l:'Cat',w:0},{e:'🐈',l:'Dog',w:1},{e:'🐩',l:'Dog',w:0}];
+  $('#spot').innerHTML=items.map((it,i)=>`<button class="chip" data-i="${i}"><span class="big">${it.e}</span><small>Label: <b>${it.l}</b></small></button>`).join('');
+  $('#spot').onclick=e=>{const b=e.target.closest('.chip');if(b){b.classList.toggle('sel');b.classList.remove('ok','bad')}};
+  $('#spotChk').onclick=()=>{const sel=$$('#spot .chip.sel');const fb=$('#spotFb');
+    $$('#spot .chip').forEach(b=>{const w=items[b.dataset.i].w;if(b.classList.contains('sel'))b.classList.add(w?'ok':'bad')});
+    const good=sel.filter(b=>items[b.dataset.i].w).length;
+    if(good===2&&sel.length===2){fb.className='fb good';fb.textContent='You found them! Wrong labels confuse the AI — good data matters! 🕵️'}
+    else{fb.className='fb oops';fb.textContent='Not quite — look again at each picture and its label. Find exactly 2 mistakes.'}};
+};
+
+// BUILD: fruit rule coder
+App.onShow.build=()=>{
+  const COL=['red','yellow','orange','green','purple'],SH=['round','long','bunch'],OUT=['Apple 🍎','Banana 🍌','Orange 🍊','Grapes 🍇','Cucumber 🥒'];
+  const FR=[{e:'🍌',c:'yellow',s:'long',a:'Banana 🍌'},{e:'🍎',c:'red',s:'round',a:'Apple 🍎'},{e:'🍊',c:'orange',s:'round',a:'Orange 🍊'},
+    {e:'🍇',c:'purple',s:'bunch',a:'Grapes 🍇'},{e:'🍏',c:'green',s:'round',a:'Apple 🍎'},{e:'🥒',c:'green',s:'long',a:'Cucumber 🥒'}];
+  const opt=(arr,v)=>arr.map(x=>`<option${x===v?' selected':''}>${x}</option>`).join('');
+  const addRule=(c='red',s='round',o='Apple 🍎')=>{if($$('#rules .rule').length>=7){toast('7 rules is the maximum!');return}
+    $('#rules').insertAdjacentHTML('beforeend',`<div class="rule"><span class="blk if">IF colour is <select>${opt(COL,c)}</select></span><span class="blk and">AND shape is <select>${opt(SH,s)}</select></span><span class="blk then">THEN say <select>${opt(OUT,o)}</select></span><button class="btn ghost sm del">🗑️</button></div>`);code()};
+  const rules=()=>$$('#rules .rule').map(r=>{const s=$$('select',r);return{c:s[0].value,s:s[1].value,o:s[2].value}});
+  const code=()=>{$('#code').innerHTML=rules().map(r=>`<span class="k">if</span> colour == <span class="s">"${r.c}"</span> <span class="k">and</span> shape == <span class="s">"${r.s}"</span>:\n    say(<span class="s">"${r.o.split(' ')[0]}"</span>)`).join('\n')+`\n<span class="k">else</span>:\n    say(<span class="s">"I don't know"</span>)`};
+  addRule('yellow','long','Banana 🍌');addRule('red','round','Apple 🍎');addRule();
+  $('#rules').onchange=code;
+  $('#rules').onclick=e=>{if(e.target.closest('.del')){e.target.closest('.rule').remove();code()}};
+  $('#addRule').onclick=()=>addRule();
+  $('#runRules').onclick=()=>{const rs=rules();let score=0;$('#resT').innerHTML='<tr><th>Fruit</th><th>AI says</th><th></th></tr>';$('#runFb').textContent='';
+    FR.forEach((f,i)=>setTimeout(()=>{const m=rs.find(r=>r.c===f.c&&r.s===f.s);const say=m?m.o:'🤷 I don\'t know';const ok=say===f.a;if(ok)score++;
+      $('#resT').insertAdjacentHTML('beforeend',`<tr><td style="font-size:30px">${f.e}</td><td>${say}</td><td>${ok?'✅':'❌'}</td></tr>`);
+      if(i===FR.length-1){const fb=$('#runFb');if(score===6){fb.className='fb good';fb.textContent='6 / 6! Your Fruit Detector is perfect! 🎉';award('build','Brilliant coder! 🧱')}else{fb.className='fb oops';fb.textContent=`${score} / 6 correct. Fix the ❌ fruits by changing or adding rules!`}}},i*450))};
+};
+
+// CHALLENGE
+App.onShow.challenge=()=>{
+  const P=[{e:'🐈',n:'Cat walking',g:1},{e:'🐶',n:'A dog',g:0,why:'That is a dog, not a cat — wrong example!'},{e:'🐈‍⬛',n:'Black cat',g:1},
+    {e:'🐱',n:'Cat face',g:1},{e:'🐱',n:'Same cat face again',g:0,why:'Copying the same photo teaches nothing new.'},{e:'😺',n:'Happy cat',g:1},
+    {e:'🌫️',n:'Very blurry photo',g:0,why:'Too blurry — the AI cannot see the cat.'},{e:'😿',n:'Sad cat',g:1},{e:'🧸',n:'Teddy bear',g:0,why:'A teddy is a toy, not a cat.'},
+    {e:'🙀',n:'Surprised cat',g:1},{e:'🦁',n:'Lion',g:0,why:'A lion is a wild big cat — it can confuse a pet-cat detector.'},{e:'🐱',n:'Same cat face (copy 2)',g:0,why:'Another copy — no new information.'}];
+  const build=()=>{$('#pick').innerHTML=P.map((p,i)=>`<button class="chip" data-i="${i}"><span class="big">${p.e}</span><small>${p.n}</small></button>`).join('');$('#pickN').textContent=0;$('#pickFb').innerHTML=''};build();
+  $('#pick').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;const n=$$('#pick .chip.sel').length;
+    if(!b.classList.contains('sel')&&n>=6){toast('Only 6 photos allowed! Remove one first.');return}b.classList.toggle('sel');$('#pickN').textContent=$$('#pick .chip.sel').length};
+  $('#pickRst').onclick=build;
+  $('#pickChk').onclick=()=>{const sel=$$('#pick .chip.sel');if(sel.length<6){toast('Pick 6 photos first!');return}
+    const bad=sel.filter(b=>!P[b.dataset.i].g);sel.forEach(b=>b.classList.add(P[b.dataset.i].g?'ok':'bad'));
+    if(!bad.length){$('#pickFb').innerHTML='<p class="fb good">🎉 Your AI is super smart! You chose 6 different, clear cat photos.</p>';award('challenge','Dataset champion! 🏆')}
+    else $('#pickFb').innerHTML='<p class="fb oops">Your AI got a bit confused. Here is why:</p>'+bad.map(b=>`<p>${P[b.dataset.i].e} ${P[b.dataset.i].why}</p>`).join('')+'<p class="muted">Swap the red ones and train again!</p>'};
+  quiz($('#superQ'),[{q:'Your AI learned from cats sitting and walking. Now it sees a cat curled up asleep in a box 📦🐈. What might happen?',
+    o:['It will always be right','It might not recognise it, because it never saw sleeping cats','It will say "dog" for sure','The AI will fall asleep too'],a:1,
+    why:'AI only knows the kinds of examples it saw. To fix it, add photos of cats in many poses — sleeping, jumping, hiding!'}]);
+};
+
+// QUIZ
+App.onShow.quiz=()=>quiz($('#quiz'),[
+  {q:'How does AI learn to recognise a cat?',o:['By being told one rule','By seeing many labelled cat pictures','By guessing randomly','By smelling cats'],a:1,why:'AI learns from lots of examples with labels.'},
+  {q:'What is a label?',o:['The name we give a picture','A sticker on a robot','A kind of camera','A computer game'],a:0,why:'A label tells the AI what is in the picture, like "cat".'},
+  {q:'What happens if we give the AI wrong labels?',o:['It gets smarter','It gets confused and makes mistakes','Nothing happens','It turns off'],a:1,why:'Wrong labels teach the wrong thing — so the AI makes mistakes.'},
+  {q:'Which training data is best?',o:['10 copies of one photo','Many different, clear photos','Only blurry photos','No photos at all'],a:1,why:'Variety helps the AI understand all kinds of cats.'},
+  {q:'A "prediction" is…',o:['A photo frame','The AI\'s guess about a new picture','A type of fruit','A wrong label'],a:1,why:'After learning, the AI predicts what a new picture shows.'},
+  {q:'Mia\'s AI only saw red apples. Now it sees a green apple 🍏. What might happen?',o:['It knows it perfectly','It might not recognise it','It turns red','It becomes a banana'],a:1,why:'It never saw green apples — so add them to the training data!'}
+],s=>{if(s>=4)award('quiz','Quiz star! 🎯')});
+</script><script>App.onShow.activity=()=>{
+  sorter($('#sort1'),[
+    {e:'🐈',n:'Cat',cat:'cat'},{e:'🐕',n:'Dog',cat:'dog'},{e:'😺',n:'Happy cat',cat:'cat'},
+    {e:'🐶',n:'Puppy',cat:'dog'},{e:'🐈‍⬛',n:'Black cat',cat:'cat'},{e:'🐩',n:'Poodle',cat:'dog'}],
+    [{id:'cat',name:'Cat',icon:'🐱'},{id:'dog',name:'Dog',icon:'🐶'}],
+    ()=>award('activity','Perfect labels! ⭐'));
+  const items=[{e:'🐱',l:'Cat',w:0},{e:'🐕',l:'Dog',w:0},{e:'🐶',l:'Cat',w:1},{e:'😺',l:'Cat',w:0}];
+  $('#spot').innerHTML=items.map((it,i)=>`<button class="chip" data-i="${i}"><span class="big">${it.e}</span><small>Name: <b>${it.l}</b></small></button>`).join('');
+  $('#spot').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;const fb=$('#spotFb');
+    if(items[b.dataset.i].w){b.classList.add('ok');fb.className='fb good';fb.textContent='Yes! That is a dog, not a cat. Wrong names confuse the AI! 🕵️'}
+    else{b.classList.add('bad');fb.className='fb oops';fb.textContent='That name is correct. Look again! 🙂'}};
+};
+
+App.onShow.build=()=>{
+  const OUT=['Apple 🍎','Banana 🍌','Orange 🍊'];
+  const R=[['yellow','long'],['red','round'],['orange','round']];
+  const FR=[{e:'🍌',c:'yellow',s:'long',a:'Banana 🍌'},{e:'🍎',c:'red',s:'round',a:'Apple 🍎'},{e:'🍊',c:'orange',s:'round',a:'Orange 🍊'}];
+  $('#rules').innerHTML=R.map(([c,s])=>`<div class="rule"><span class="blk if">IF colour is ${c}</span><span class="blk and">AND shape is ${s}</span><span class="blk then">THEN say <select><option value="">❓ choose</option>${OUT.map(o=>`<option>${o}</option>`).join('')}</select></span></div>`).join('');
+  const rules=()=>$$('#rules select').map((s,i)=>({c:R[i][0],s:R[i][1],o:s.value}));
+  const code=()=>{$('#code').innerHTML=rules().map(r=>`<span class="k">if</span> colour == <span class="s">"${r.c}"</span> <span class="k">and</span> shape == <span class="s">"${r.s}"</span>:\n    say(<span class="s">"${r.o?r.o.split(' ')[0]:'???'}"</span>)`).join('\n')};code();
+  $('#rules').onchange=code;
+  $('#runRules').onclick=()=>{const rs=rules();if(rs.some(r=>!r.o)){toast('Choose an answer for every rule first!');return}
+    let score=0;$('#resT').innerHTML='<tr><th>Fruit</th><th>Luna says</th><th></th></tr>';$('#runFb').textContent='';
+    FR.forEach((f,i)=>setTimeout(()=>{const m=rs.find(r=>r.c===f.c&&r.s===f.s);const ok=m.o===f.a;if(ok)score++;
+      $('#resT').insertAdjacentHTML('beforeend',`<tr><td style="font-size:30px">${f.e}</td><td>${m.o}</td><td>${ok?'✅':'❌'}</td></tr>`);
+      if(i===FR.length-1){const fb=$('#runFb');if(score===3){fb.className='fb good';fb.textContent='3 / 3! Your Fruit Detector works! 🎉';award('build','Brilliant coder! 🧱')}else{fb.className='fb oops';fb.textContent=`${score} / 3 correct. Change the ❌ answers and try again!`}}},i*500))};
+};
+
+App.onShow.challenge=()=>{
+  const P=[{e:'🐈',n:'Cat walking',g:1},{e:'🐶',n:'A dog',g:0,why:'That is a dog, not a cat!'},{e:'🐈‍⬛',n:'Black cat',g:1},{e:'🧸',n:'Teddy bear',g:0,why:'A teddy is a toy, not a cat.'},
+    {e:'😺',n:'Happy cat',g:1},{e:'🌫️',n:'Blurry photo',g:0,why:'Too blurry — Luna cannot see the cat.'},{e:'🙀',n:'Surprised cat',g:1},{e:'🍎',n:'An apple',g:0,why:'An apple is not a cat!'}];
+  const build=()=>{$('#pick').innerHTML=P.map((p,i)=>`<button class="chip" data-i="${i}"><span class="big">${p.e}</span><small>${p.n}</small></button>`).join('');$('#pickN').textContent=0;$('#pickFb').innerHTML=''};build();
+  $('#pick').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;if(!b.classList.contains('sel')&&$$('#pick .chip.sel').length>=4){toast('Only 4 photos! Remove one first.');return}b.classList.toggle('sel');$('#pickN').textContent=$$('#pick .chip.sel').length};
+  $('#pickRst').onclick=build;
+  $('#pickChk').onclick=()=>{const sel=$$('#pick .chip.sel');if(sel.length<4){toast('Pick 4 photos first!');return}
+    const bad=sel.filter(b=>!P[b.dataset.i].g);sel.forEach(b=>b.classList.add(P[b.dataset.i].g?'ok':'bad'));
+    if(!bad.length){$('#pickFb').innerHTML='<p class="fb good">🎉 Luna learned well! You picked 4 real, clear cats.</p>';award('challenge','Dataset champion! 🏆')}
+    else $('#pickFb').innerHTML='<p class="fb oops">Oops! Some photos are not good:</p>'+bad.map(b=>`<p>${P[b.dataset.i].e} ${P[b.dataset.i].why}</p>`).join('')};
+  quiz($('#superQ'),[{q:'Luna has seen only 1 cat photo. Will Luna be good at finding cats?',o:['Yes, 1 is enough','No, Luna needs many more examples'],a:1,why:'More examples help AI learn better — just like practice helps you!'}]);
+};
+
+App.onShow.quiz=()=>quiz($('#quiz'),[
+  {q:'How does AI learn what a cat looks like?',o:['🖼️ By seeing many cat pictures','😴 By sleeping'],a:0,why:'AI learns from lots of examples.'},
+  {q:'What is a label?',o:['🏷️ The name of a picture','🍕 A kind of food'],a:0,why:'A label tells the AI what is in the picture.'},
+  {q:'This picture is labelled "Cat": 🐶. Is the label right?',o:['✅ Yes','❌ No, it is a dog'],a:1,why:'It is a dog! Wrong labels confuse the AI.'},
+  {q:'Which photo is best to teach a cat?',o:['🌫️ A blurry photo','🐈 A clear cat photo','🧸 A teddy bear'],a:1,why:'Clear photos of real cats help the AI learn.'},
+  {q:'More examples make the AI…',o:['😎 Smarter','😴 Sleepy','🙈 Forget everything'],a:0,why:'More practice = better guesses!'}
+],s=>{if(s>=4)award('quiz','Quiz star! 🎯')});
+</script></body></html>
